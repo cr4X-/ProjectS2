@@ -1,0 +1,106 @@
+﻿@page "/"
+
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.PieChart
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.Util
+
+<!-- Some styling -->
+<link rel="stylesheet" href="_content/ChartJs.Blazor/ChartJSBlazor.css" />
+
+<div class="container">
+    <div class="card p-3">
+        <div class="row">
+            <div class="col-6 align-content-end">
+                <div class="form-group">
+                    <label>Dein Name:</label>
+                    <input @bind="Name1" class="form-control" type="text" required />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>Sein/Ihr Name:</label>
+                    <input @bind="Name2" class="form-control" type="text" required />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <button type="button" class="btn btn-primary" @onclick="Calculate">Start ❤</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <ChartJsPieChart @ref="_pieChartJs" Config="@_config" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private PieConfig _config;
+    private ChartJsPieChart _pieChartJs;
+    private string Name1 { get; set; }
+    private string Name2 { get; set; }
+
+    private void Calculate()
+    {
+        _config.Data.Labels.Clear();
+        _config.Data.Datasets.Clear();
+
+
+        if (!string.IsNullOrWhiteSpace(Name1) && !string.IsNullOrWhiteSpace(Name2))
+        {
+            _config.Data.Labels.AddRange(new[] { "Love", "No Love" });
+
+            var pieSet = new PieDataset
+            {
+                BackgroundColor = new[] { "#b71c1c", "#ffcdd2" },
+                BorderWidth = 0,
+                //HoverBackgroundColor = ColorUtil.RandomColorString(),
+                //HoverBorderColor = ColorUtil.RandomColorString(),
+                HoverBorderWidth = 1,
+                BorderColor = "#ffffff"
+            };
+
+            double d = 0;
+            if ((Name1.ToLower() == "kim" && Name2.ToLower() == "marco")
+                || (Name1.ToLower() == "marco" && Name2.ToLower() == "kim")
+                || (Name1.ToLower() == "scrat" && Name2.ToLower() == "newgate")
+                || (Name1.ToLower() == "newgate" && Name2.ToLower() == "scrat")
+                || (Name1.ToLower() == "newgate" && Name2.ToLower() == "kim")
+                || (Name1.ToLower() == "kim" && Name2.ToLower() == "newgate")
+                || (Name1.ToLower() == "marco" && Name2.ToLower() == "scrat")
+                || (Name1.ToLower() == "scrat" && Name2.ToLower() == "marco"))
+                d = new Random().NextDouble() * (99.9 - 99) + 99;
+            else
+                d = new Random().NextDouble() * (50 - 1);
+
+            pieSet.Data.AddRange(new double[] { d, 100 - d });
+            _config.Data.Datasets.Add(pieSet);
+
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _config = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                //Title = new OptionsTitle
+                //{
+                //    Display = true,
+                //    Text = "How Deep Is Your Love 🎵"
+                //},
+                Responsive = true,
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    AnimateScale = true
+                }
+            }
+        };
+    }
+}
